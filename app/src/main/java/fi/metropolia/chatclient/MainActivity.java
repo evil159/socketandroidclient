@@ -1,5 +1,7 @@
 package fi.metropolia.chatclient;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -16,6 +18,11 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
+
+import com.joanzapata.iconify.IconDrawable;
+import com.joanzapata.iconify.Iconify;
+import com.joanzapata.iconify.fonts.FontAwesomeIcons;
+import com.joanzapata.iconify.fonts.FontAwesomeModule;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements ChatClientObserve
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Iconify.with(new FontAwesomeModule());
         Settings.initialize(getApplicationContext());
         ButterKnife.bind(this);
 
@@ -60,6 +68,18 @@ public class MainActivity extends AppCompatActivity implements ChatClientObserve
 
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
+
+        menu.findItem(R.id.users).setIcon(
+                new IconDrawable(this, FontAwesomeIcons.fa_users)
+                        .colorRes(android.R.color.white)
+                        .actionBarSize()
+        );
+        menu.findItem(R.id.logout).setIcon(
+                new IconDrawable(this, FontAwesomeIcons.fa_sign_out)
+                        .colorRes(android.R.color.white)
+                        .actionBarSize()
+        );
+
         return true;
     }
 
@@ -114,10 +134,22 @@ public class MainActivity extends AppCompatActivity implements ChatClientObserve
     }
 
     private void logoutButtonPressed() {
-        ChatClient.getInstance().disconnect();
-        UserSession.getInstance().close();
-        showLoginScreen();
-        resetHistory();
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.log_out_warning)
+                .setPositiveButton(R.string.action_yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        ChatClient.getInstance().disconnect();
+                        UserSession.getInstance().close();
+                        showLoginScreen();
+                        resetHistory();
+
+                    }
+                })
+                .setNegativeButton(R.string.action_cancel, null)
+                .show();
     }
 
     private void usersButtonPressed() {
