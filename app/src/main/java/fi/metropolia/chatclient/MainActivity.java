@@ -115,8 +115,7 @@ public class MainActivity extends AppCompatActivity implements ChatClientObserve
     protected void onPause() {
         super.onPause();
 
-        ChatClient.getInstance().deregisterObserver(this);
-        ChatClient.getInstance().getHistory().setListener(null);
+        deregisterNotifications();
     }
 
     protected void onResume() {
@@ -130,6 +129,11 @@ public class MainActivity extends AppCompatActivity implements ChatClientObserve
         }
     }
 
+    private void deregisterNotifications() {
+        ChatClient.getInstance().deregisterObserver(this);
+        ChatClient.getInstance().getHistory().setListener(null);
+    }
+
     private void onSuccessfulLogin() {
     }
 
@@ -141,8 +145,11 @@ public class MainActivity extends AppCompatActivity implements ChatClientObserve
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
+                        deregisterNotifications();
+
                         ChatClient.getInstance().disconnect();
                         UserSession.getInstance().close();
+
                         showLoginScreen();
                         resetHistory();
 
