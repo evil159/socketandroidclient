@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_login">Login</string>
+    <string name="action_logout">Logout</string>
+    <string name="action_send">Send</string>
+    <string name="app_name">Chat Client</string>
+    <string name="appbar_scrolling_view_behavior">android.support.design.widget.AppBarLayout$ScrollingViewBehavior</string>
+    <string name="bottom_sheet_behavior">android.support.design.widget.BottomSheetBehavior</string>
+    <string name="character_counter_pattern">%1$d / %2$d</string>
+    <string name="chat_participants">Participants</string>
+    <string name="login_authenticating">Authenticating…</string>
+    <string name="login_welcome">Welcome</string>
+    <string name="new_message_hint">Type your message here</string>
+    <string name="no_connection_to_server">Cannot connect to the server. Please make sure your internet is working.</string>
+    <string name="username_empty_error">Username cannot be empty</string>
+    <string name="username_hint">Username</string>
+</resources>
