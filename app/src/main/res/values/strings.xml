@@ -15,6 +15,6 @@
     <string name="username_empty_error">Username cannot be empty</string>
     <string name="username_hint">Username</string>
     <string name="log_out_warning">Are you sure you want to log out?</string>
-    <string name="action_yes">Yes</string>
+    <string name="action_log_out">Log out</string>
     <string name="action_cancel">Cancel</string>
 </resources>

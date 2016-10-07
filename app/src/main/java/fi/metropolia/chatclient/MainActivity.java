@@ -137,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements ChatClientObserve
 
         new AlertDialog.Builder(this)
                 .setTitle(R.string.log_out_warning)
-                .setPositiveButton(R.string.action_yes, new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.action_log_out, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
