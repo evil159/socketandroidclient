@@ -1,6 +1,5 @@
 package fi.metropolia.chatclient;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -12,12 +11,14 @@ import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,9 +29,6 @@ import fi.metropolia.chatclient.chat.History.HistoryChangeListener;
 import fi.metropolia.chatclient.chat.Message;
 import fi.metropolia.chatclient.models.Settings;
 import fi.metropolia.chatclient.models.UserSession;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements ChatClientObserver, HistoryChangeListener, TextWatcher, OnEditorActionListener {
     private static final int LOGIN_ACTIVITY_CODE = 88;
@@ -53,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements ChatClientObserve
         messageInput.addTextChangedListener(this);
         messageInput.setOnEditorActionListener(this);
 
-        setSupportActionBar(this.toolbar);
+        setSupportActionBar(toolbar);
 
         if (!UserSession.getInstance().isOpen()) {
             showLoginScreen();
@@ -143,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements ChatClientObserve
     }
 
     public void onHistoryUpdated(List<Message> history) {
-        this.messagesListView.setAdapter(new ArrayAdapter(this, android.R.layout.simple_list_item_1, history));
+        messagesListView.setAdapter(new ChatListAdapter(this, history));
     }
 
     public void onConnectedToSocket() {
