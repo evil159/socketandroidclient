@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -16,8 +17,8 @@ import java.util.List;
 public class SocketClient implements Serializable, SocketObservable {
     private final String host;
     private BufferedReader in;
-    private final List<String> messagesQueue;
-    private final List<SocketObserver> observers;
+    private final List<String> messagesQueue = new ArrayList<String>();
+    private final List<SocketObserver> observers = new ArrayList<SocketObserver>();
     private PrintWriter out;
     private final int port;
     private boolean running;
@@ -25,94 +26,64 @@ public class SocketClient implements Serializable, SocketObservable {
 
     private class InitializationRoutine implements Runnable {
 
-        /* renamed from: fi.metropolia.chatclient.socket.SocketClient.InitializationRoutine.1 */
-        class C02221 implements Runnable {
-            C02221() {
-            }
-
-            public void run() {
-                SocketClient.this.onConnected();
-            }
-        }
-
-        /* renamed from: fi.metropolia.chatclient.socket.SocketClient.InitializationRoutine.2 */
-        class C02232 implements Runnable {
-            final /* synthetic */ IOException val$e;
-
-            C02232(IOException iOException) {
-                this.val$e = iOException;
-            }
-
-            public void run() {
-                SocketClient.this.onConnectionError(this.val$e);
-            }
-        }
-
         private InitializationRoutine() {
         }
 
         public void run() {
             try {
-                SocketClient.this.socket = new Socket(SocketClient.this.host, SocketClient.this.port);
-                SocketClient.this.out = new PrintWriter(SocketClient.this.socket.getOutputStream());
-                SocketClient.this.in = new BufferedReader(new InputStreamReader(SocketClient.this.socket.getInputStream()));
-                SocketClient.this.runOnMainThread(new C02221());
-            } catch (IOException e) {
-                SocketClient.this.runOnMainThread(new C02232(e));
+                socket = new Socket(host, port);
+                out = new PrintWriter(socket.getOutputStream());
+                in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                runOnMainThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        onConnected();
+                    }
+                });
+            } catch (final IOException e) {
+                runOnMainThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        onConnectionError(e);
+                    }
+                });
             }
         }
     }
 
     private class ServerListener implements Runnable {
 
-        /* renamed from: fi.metropolia.chatclient.socket.SocketClient.ServerListener.1 */
-        class C02241 implements Runnable {
-            final /* synthetic */ String val$message;
-
-            C02241(String str) {
-                this.val$message = str;
-            }
-
-            public void run() {
-                SocketClient.this.onMessageReceived(this.val$message);
-            }
-        }
-
-        /* renamed from: fi.metropolia.chatclient.socket.SocketClient.ServerListener.2 */
-        class C02252 implements Runnable {
-            final /* synthetic */ IOException val$e;
-
-            C02252(IOException iOException) {
-                this.val$e = iOException;
-            }
-
-            public void run() {
-                SocketClient.this.notifyListenersOnConnectionFailure(this.val$e);
-            }
-        }
-
         private ServerListener() {
         }
 
         public void run() {
-            while (SocketClient.this.running) {
+            while (isRunning()) {
                 try {
-                    String message = SocketClient.this.in.readLine();
+                    final String message = in.readLine();
                     if (message == null) {
                         throw new IOException("Disconnected from server");
                     }
-                    SocketClient.this.runOnMainThread(new C02241(message));
-                } catch (IOException e) {
-                    SocketClient.this.runOnMainThread(new C02252(e));
+                    runOnMainThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            onMessageReceived(message);
+                        }
+                    });
+                } catch (final IOException e) {
+                    runOnMainThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            notifyListenersOnConnectionFailure(e);
+                        }
+                    });
+                    running = false;
                 }
             }
-            SocketClient.this.disposeOfResources();
+            disposeOfResources();
         }
     }
 
     public SocketClient(String host, int port) {
-        this.observers = new ArrayList();
-        this.messagesQueue = new ArrayList();
         this.running = false;
         this.host = host;
         this.port = port;
@@ -123,7 +94,7 @@ public class SocketClient implements Serializable, SocketObservable {
     }
 
     public boolean isRunning() {
-        return this.running;
+        return running;
     }
 
     public void connect() {
@@ -131,7 +102,7 @@ public class SocketClient implements Serializable, SocketObservable {
     }
 
     public void disconnect() {
-        this.running = false;
+        running = false;
         disposeOfResources();
     }
 
